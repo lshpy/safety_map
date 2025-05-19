@@ -1,8 +1,12 @@
 import streamlit as st
-import streamlit.components.v1 as components
-import os
 
-st.set_page_config(layout="wide")
+# ✅ 반드시 가장 첫 줄에서 설정
+st.set_page_config(page_title="화성시 안전지도", layout="wide")
+
+# 그 이후에 다른 import 및 실행 코드
+import os
+import streamlit.components.v1 as components
+
 st.title("📍 화성시 안전 점수 격자 지도")
 
 html_path = "static/grid_map.html"
