@@ -24,7 +24,7 @@ def render():
         try:
             df = pd.read_excel(path, engine="openpyxl")
 
-            # 위도/경도 컬럼이 없을 경우 건너뜀
+            # Skip files without latitude/longitude columns
             if {"refine_wgs84_lat", "refine_wgs84_logt"}.issubset(df.columns):
                 for _, row in df.iterrows():
                     lat, lon = row["refine_wgs84_lat"], row["refine_wgs84_logt"]
@@ -40,12 +40,12 @@ def render():
         st.error("❗ 유효한 좌표 데이터를 가진 파일이 없습니다.")
         return
 
-    # 격자 생성
+    # Build the grid
     lat_range = np.arange(36.95, 37.35, 0.001)
     lon_range = np.arange(126.8, 127.3, 0.001)
     grid_points = [(round(lat, 4), round(lon, 4)) for lat in lat_range for lon in lon_range]
 
-    # 그리드 점수 계산
+    # Compute grid scores
     grid_scores = defaultdict(float)
     for lat_g, lon_g in grid_points:
         scores = [score for lat_p, lon_p, score in all_points if geodesic((lat_g, lon_g), (lat_p, lon_p)).meters <= 200]
@@ -56,7 +56,7 @@ def render():
         st.warning("⚠️ 그리드 점수가 계산되지 않았습니다.")
         return
 
-    # 색상 계산 함수
+    # Colour mapping function
     def get_color(score, min_score, max_score):
         ratio = (score - min_score) / (max_score - min_score + 1e-6)
         ratio = max(0, min(1, ratio))
@@ -64,7 +64,7 @@ def render():
         g = int(255 * ratio)
         return f"#{r:02x}{g:02x}00"
 
-    # Folium 지도 생성
+    # Create the Folium map
     m = folium.Map(location=[37.2, 127.0], zoom_start=11)
     min_score, max_score = min(grid_scores.values()), max(grid_scores.values())
 

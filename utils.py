@@ -3,7 +3,7 @@ import numpy as np
 from collections import defaultdict
 from geopy.distance import geodesic
 
-# 파일별 점수 설정 (경로 포함)
+# Safety score per data file (keyed by path)
 file_score_map = {
     "data/소방경찰.xlsx": 3,
     "data/유흥.xlsx": -3,
